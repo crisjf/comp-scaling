@@ -1,5 +1,32 @@
 options(stringsAsFactors = FALSE)
 
+loadBRAParams <- function(actType) {
+  rcol     <<- 'rcode'
+  popCol   <<- 'pop'
+  rNameCol <<- 'rname'
+  if (actType=='ind') {
+    acol     <<- 'icode2'
+    aNameCol <<- 'iname2'  
+  } else if (actType=='occ') {
+    acol     <<- 'ocode2'
+    aNameCol <<- 'oname2'  
+  } else {
+    stop(paste('Unrecognized Activity Type:',actType))
+  }
+}
+
+loadUSParams <- function(actType) {
+  rcol     <<- 'CBSA'
+  popCol   <<- 'pop.2010'
+  rNameCol <<- 'CBSA.Name'
+  if (actType=='field') {
+    acol     <<- 'ASJC.2D'
+    aNameCol <<- 'ASJC.2D.Name'
+  } else {
+    stop(paste('Unrecognized Activity Type:',actType))
+  }
+}
+
 .loadAct <- function(delta,rcol,acol,xcol,ycol,aNameCol,RAYfname,Afname,aColLow) {
   #If no aggregation is needed, then pass aColLow='null'
   economicActivity    <- read.csv(paste0("../1.Data/",RAYfname))

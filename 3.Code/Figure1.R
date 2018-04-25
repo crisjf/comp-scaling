@@ -7,17 +7,8 @@ source("../2.Functions/loadData.R")
 # 0 - SELECT COLUMN NAMES  #
 #==========================#
 
-rcol     <- 'CBSA'
-acol     <- 'ASJC.2D'
-popCol   <- 'pop.2010'
-rNameCol <- 'CBSA.Name'
-aNameCol <- 'ASJC.2D.Name'
-
-rcol     <- 'rcode'
-acol     <- 'icode2'
-popCol   <- 'pop'
-rNameCol <- 'rname'
-aNameCol <- 'iname2'
+loadUSParams('field')
+loadBRAParams('ind')
 
 #=======================================#
 # 1 - LOAD DATA ON ECONOMIC ACTIVITIES  #
