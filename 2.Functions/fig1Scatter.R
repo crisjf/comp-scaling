@@ -1,4 +1,4 @@
-fig1Scatter <- function(df,xcol,ycol,plotName,ylabel) {
+fig1Scatter <- function(df,xcol,ycol,plotName,ylabel,dirName) {
   minix = min(log(df[,xcol]))
   maxix = round (max(log(df[,xcol])), digits = 0)
   
@@ -6,7 +6,11 @@ fig1Scatter <- function(df,xcol,ycol,plotName,ylabel) {
   maxiy = round(max(log(df[,ycol])), digits = 0)
   
   setEPS()
-  postscript(paste0('../4.Results/Figure1/',plotName, ".eps"))
+  if (dirName=='') {
+    postscript(paste0('../4.Results/Figure1/',plotName, ".eps"))
+  } else {
+    postscript(paste0('../4.Results/Figure1/',dirName,'/',plotName, ".eps"))
+  }
   
   plot(log(df[,xcol]), log(df[,ycol]), 
        xlim = c(minix, maxix), ylim = c(miniy,maxiy),
