@@ -26,6 +26,7 @@ aNameCol <- 'iname2'
 delta <- 0.1 #How much to offset economic output by (to deal with entries with zeros)
 economicActivity <- loadFields(delta)
 economicActivity <- loadBRAInds(delta)
+economicActivity <- loadBRAOccs(delta)
 
 #==========================#
 # 2 - LOAD DATA ON CITIES  #
