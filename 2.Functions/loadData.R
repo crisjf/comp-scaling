@@ -1,56 +1,73 @@
 options(stringsAsFactors = FALSE)
 
-loadBRAParams <- function(actType) {
-  rcol     <<- 'rcode'
-  popCol   <<- 'pop'
-  rNameCol <<- 'rname'
-  useDec   <<- FALSE
-  if (actType=='ind') {
-    acol     <<- 'icode2'
-    aNameCol <<- 'iname2'  
-    dirName  <<- 'BR_Ind'
+.BRAEnv <- function(actType) {
+  BRA.env <- new.env()
+  assign("rcol"    , 'rcode', envir=BRA.env)
+  assign("rNameCol", 'rname', envir=BRA.env)
+  assign("useDec"  , FALSE  , envir=BRA.env)
+  assign("year"    , 2010   , envir=BRA.env)
+  if (actType=='none') {
+    
+  } else if (actType=='ind') {
+    assign("acol"    , 'icode2', envir=BRA.env)
+    assign("aNameCol", 'iname2', envir=BRA.env)
+    assign("dirName" , 'BR_Ind', envir=BRA.env)
   } else if (actType=='occ') {
-    acol     <<- 'ocode2'
-    aNameCol <<- 'oname2'
-    dirName  <<- 'BR_Occ'  
+    assign("acol"    , 'ocode2', envir=BRA.env)
+    assign("aNameCol", 'oname2', envir=BRA.env)
+    assign("dirName" , 'BR_Occ', envir=BRA.env) 
   } else {
     stop(paste('Unrecognized Activity Type:',actType))
   }
+  return(BRA.env)
 }
+
+.USEnv <- function(actType) {
+  US.env <- new.env()
+  assign("rcol"    , 'CBSA'     , envir=US.env)
+  assign("rNameCol", 'CBSA.Name', envir=US.env)
+  if (actType=='none') {
+
+  } else if (actType=='field') {
+    assign("acol"    , 'ASJC.2D'     , envir=US.env)
+    assign("aNameCol", 'ASJC.2D.Name', envir=US.env)
+    assign("dirName" , 'US_Field'    , envir=US.env)
+    assign("year"    , 2010          , envir=US.env)
+    assign("useDec"  , FALSE         , envir=US.env)
+  } else if (actType=='techs') {
+    assign("acol"    , 'NBER.Sub.Cat'     , envir=US.env)
+    assign("aNameCol", 'NBER.Sub.Cat.Name', envir=US.env)
+    assign("dirName" , 'US_Tech'          , envir=US.env)
+    assign("year"    , 2000               , envir=US.env)
+    assign("useDec"  , TRUE               , envir=US.env)
+  } else if (actType=='ind') {
+    assign("acol"    , 'NAICS.2D'     , envir=US.env)
+    assign("aNameCol", 'NAICS.2D.Name', envir=US.env)
+    assign("dirName" , 'US_Ind'       , envir=US.env)
+    assign("year"    , 2015           , envir=US.env)
+    assign("useDec"  , FALSE          , envir=US.env)
+  } else if (actType=='occ') {
+    assign("acol"    , 'Occ.2D'     , envir=US.env)
+    assign("aNameCol", 'Occ.2D.Name', envir=US.env)
+    assign("dirName" , 'US_Occ'     , envir=US.env)
+    assign("year"    , 2015         , envir=US.env)
+    assign("useDec"  , FALSE        , envir=US.env)
+  } else {
+    stop(paste('Unrecognized Activity Type:',actType))
+  }
+  return(US.env)
+}
+
 
 loadUSParams <- function(actType) {
-  rcol     <<- 'CBSA'
-  popCol   <<- 'pop'
-  rNameCol <<- 'CBSA.Name'
-  if (actType=='field') {
-    acol     <<- 'ASJC.2D'
-    aNameCol <<- 'ASJC.2D.Name'
-    dirName  <<- 'US_Field'
-    year     <<- 2010
-    useDec   <<- FALSE
-  } else if (actType=='techs') {
-    acol     <<- 'NBER.Sub.Cat'
-    aNameCol <<- 'NBER.Sub.Cat.Name'
-    dirName  <<- 'US_Tech'
-    year     <<- 2000
-    useDec   <<- TRUE
-  } else if (actType=='ind') {
-    acol     <<- 'NAICS.2D'
-    aNameCol <<- 'NAICS.2D.Name'
-    dirName  <<- 'US_Ind'
-    year     <<- 2015
-    useDec   <<- FALSE
-  } else if (actType=='occ') {
-    acol     <<- 'Occ.2D'
-    aNameCol <<- 'Occ.2D.Name'
-    dirName  <<- 'US_Occ'
-    year     <<- 2015
-    useDec   <<- FALSE
-  } else {
-    stop(paste('Unrecognized Activity Type:',actType))
-  }
+  myenv <- .USEnv(actType)
+  for(n in ls(myenv, all.names=TRUE)){assign(n, get(n, myenv), globalenv())}
 }
 
+loadBRAParams <- function(actType) {
+  myenv <- .BRAEnv(actType)
+  for(n in ls(myenv, all.names=TRUE)){assign(n, get(n, myenv), globalenv())}
+}
 
 .loadAct <- function(delta,year,rcol,acol,xcol,ycol,aNameCol,RAYfname,Afname,aColLow) {
   #If no aggregation is needed, then pass aColLow='null' (never tested)
@@ -72,102 +89,159 @@ loadUSParams <- function(actType) {
   return(economicActivity)
 }
 
-loadFields <- function(delta) {
-  rcol     <- 'CBSA'
-  acol     <- 'ASJC.2D'
+loadUSActivity <- function(delta,actType) {
+  myenv <- .USEnv(actType)
+  for(n in ls(myenv, all.names=TRUE)){assign(n, get(n, myenv), environment())}
+
+  if (actType=='field') {
+    xcol     <- 'Nb.Papers.96.08'
+    ycol     <- 'Year'
+    RAYfname <- 'US_RegFieldYr.csv'
+    Afname   <- 'US_Field.csv'
+    aColLow  <- 'ASJC.4D'
+  } else if (actType=='techs') {
+    xcol     <- 'pat.count'
+    ycol     <- 'dec' 
+    RAYfname <- 'US_RegTechYr.csv'
+    Afname   <- 'US_Tech.csv' 
+    aColLow  <- 'Class'
+  } else if (actType=='ind') {
+    xcol     <- 'GDP'
+    ycol     <- 'Year'
+    aNameCol <- 'NAICS.2D.Name'
+    RAYfname <- 'US_RegInd2DYr.csv'
+    Afname   <- 'US_Ind.csv'
+    aColLow  <- 'null'
+  } else if (actType=='occ') {
+    xcol     <- 'Nb.Emp'
+    ycol     <- 'Year'
+    aNameCol <- 'Occ.2D.Name'
+    RAYfname <- 'US_RegOcc2DYr.csv'
+    Afname   <- 'US_Occ.csv'
+    aColLow  <- 'null'
+  } else {
+    stop(paste('Unrecognized Activity Type:',actType))
+  }
+  economicActivity <- .loadAct(delta,year,rcol,acol,xcol,ycol,aNameCol,RAYfname,Afname,aColLow)
+  return(economicActivity)
+}
+
+.loadFields <- function(delta) {
+  myenv <- .USEnv('field')
+  for(n in ls(myenv, all.names=TRUE)){assign(n, get(n, myenv), environment())}
+
   xcol     <- 'Nb.Papers.96.08'
   ycol     <- 'Year'
-  aNameCol <- 'ASJC.2D.Name'
   RAYfname <- 'US_RegFieldYr.csv'
   Afname   <- 'US_Field.csv'
   aColLow  <- 'ASJC.4D'
-  year     <- 2010
 
   economicActivity <- .loadAct(delta,year,rcol,acol,xcol,ycol,aNameCol,RAYfname,Afname,aColLow)
   return(economicActivity)
 }
 
-loadTechs <- function(delta) {
-  rcol     <- 'CBSA'
-  acol     <- 'NBER.Sub.Cat'
+.loadTechs <- function(delta) {
+  myenv <- .USEnv('field')
+  for(n in ls(myenv, all.names=TRUE)){assign(n, get(n, myenv), environment())}
+
   xcol     <- 'pat.count'
   ycol     <- 'dec' 
-  aNameCol <- 'NBER.Sub.Cat.Name'
   RAYfname <- 'US_RegTechYr.csv'
   Afname   <- 'US_Tech.csv' 
   aColLow  <- 'Class'
-  year     <- 2000
 
   economicActivity <- .loadAct(delta,year,rcol,acol,xcol,ycol,aNameCol,RAYfname,Afname,aColLow)
   return(economicActivity)
 }
 
-loadInds <- function(delta) {
-  rcol     <- 'CBSA'
-  acol     <- 'NAICS.2D'
+.loadInds <- function(delta) {
+  myenv <- .USEnv('field')
+  for(n in ls(myenv, all.names=TRUE)){assign(n, get(n, myenv), environment())}
+
   xcol     <- 'GDP'
   ycol     <- 'Year'
   aNameCol <- 'NAICS.2D.Name'
   RAYfname <- 'US_RegInd2DYr.csv'
   Afname   <- 'US_Ind.csv'
   aColLow  <- 'null'
-  year     <- 2015
 
   economicActivity <- .loadAct(delta,year,rcol,acol,xcol,ycol,aNameCol,RAYfname,Afname,aColLow)
   return(economicActivity)
 }
 
-loadOccs <- function(delta) {
-  rcol     <- 'CBSA'
-  acol     <- 'Occ.2D'
+.loadOccs <- function(delta) {
+  myenv <- .USEnv('field')
+  for(n in ls(myenv, all.names=TRUE)){assign(n, get(n, myenv), environment())}
+
   xcol     <- 'Nb.Emp'
   ycol     <- 'Year'
   aNameCol <- 'Occ.2D.Name'
   RAYfname <- 'US_RegOcc2DYr.csv'
   Afname   <- 'US_Occ.csv'
   aColLow  <- 'null'
-  year     <- 2015
 
   economicActivity <- .loadAct(delta,year,rcol,acol,xcol,ycol,aNameCol,RAYfname,Afname,aColLow)
   return(economicActivity)
 }
 
 
-loadBRAInds <- function(delta) {
-  rcol     <- 'rcode'
-  acol     <- 'icode2'
+.loadBRAInds <- function(delta) {
+  myenv <- .BRAEnv('ind')
+  for(n in ls(myenv, all.names=TRUE)){assign(n, get(n, myenv), environment())}
+  
   xcol     <- 'no_people'
   ycol     <- 'year'
-  aNameCol <- 'iname2'
   RAYfname <- 'BRA_RegIndYr.csv'
   Afname   <- 'BRA_Ind.csv'
   aColLow  <- 'icode3'
-  year     <- 2010
 
   economicActivity <- .loadAct(delta,year,rcol,acol,xcol,ycol,aNameCol,RAYfname,Afname,aColLow)
   return(economicActivity)
 }
 
-loadBRAOccs <- function(delta) {
-  rcol     <- 'rcode'
-  acol     <- 'ocode2'
+.loadBRAOccs <- function(delta) {
+  myenv <- .BRAEnv('occ')
+  for(n in ls(myenv, all.names=TRUE)){assign(n, get(n, myenv), environment())}
+  
   xcol     <- 'no_people'
   ycol     <- 'year'
-  aNameCol <- 'oname2'
   RAYfname <- 'BRA_RegOccYr.csv'
   Afname   <- 'BRA_Occ.csv'
   aColLow  <- 'ocode3'
-  year     <- 2010
+  
+  economicActivity <- .loadAct(delta,year,rcol,acol,xcol,ycol,aNameCol,RAYfname,Afname,aColLow)
+  return(economicActivity)
+}
 
+loadBRActivity <- function(delta,actType) {
+  myenv <- .BRAEnv(actType)
+  for(n in ls(myenv, all.names=TRUE)){assign(n, get(n, myenv), environment())}
+
+  if (actType=='occ') {
+    xcol     <- 'no_people'
+    ycol     <- 'year'
+    RAYfname <- 'BRA_RegOccYr.csv'
+    Afname   <- 'BRA_Occ.csv'
+    aColLow  <- 'ocode3'
+  } else if (actType=='ind') {
+    xcol     <- 'no_people'
+    ycol     <- 'year'
+    RAYfname <- 'BRA_RegIndYr.csv'
+    Afname   <- 'BRA_Ind.csv'
+    aColLow  <- 'icode3'
+  } else {
+    stop(paste('Unrecognized Activity Type:',actType))
+  }
   economicActivity <- .loadAct(delta,year,rcol,acol,xcol,ycol,aNameCol,RAYfname,Afname,aColLow)
   return(economicActivity)
 }
 
 
-loadRegs <- function(useDec,year) {
+loadUSRegs <- function(useDec,year) {
   #useDec inidicates whether to use decades or years
-  rcol     <- 'CBSA'
-  rNameCol <- 'CBSA.Name'
+  myenv <- .USEnv('none')
+  for(n in ls(myenv, all.names=TRUE)){assign(n, get(n, myenv), environment())}
+
   Rfname   <- 'US_Reg.csv'
   gdpCol   <- 'gdp.2015'
   empCol   <- 'emp.2015'
@@ -197,16 +271,20 @@ loadRegs <- function(useDec,year) {
 }
 
 loadBRARegs <- function() {
-  popCol.  <- 'pop'
-  rcol.    <- 'rcode'
-  rNameCol <- 'rname'
+  myenv <- .BRAEnv('none')
+  for(n in ls(myenv, all.names=TRUE)){assign(n, get(n, myenv), environment())}
   ycol     <- 'year'
+  popCol   <- 'pop'
   RYfname  <- 'BRA_RegYr.csv'
   Rfname   <- 'BRA_Reg.csv'
+  popth    <- 60000
   
   region <- read.csv(paste0("../1.Data/",RYfname))[,c(ycol,rcol,popCol)]
   region <- region[region[,ycol]==2010,][,c(rcol,popCol)]
   region <- merge(region, read.csv(paste0("../1.Data/",Rfname))[,c(rcol,rNameCol)], by=rcol)
+  region <- region[region[,popCol]>=popth,]
+  region$pop <- region[,popCol]
+  region <- region[,c(rcol,rNameCol,'pop')]
   return(region)
 }
 
