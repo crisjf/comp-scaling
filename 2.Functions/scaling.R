@@ -11,17 +11,23 @@ scaling = function (mat, pop)
   for(i in unique (mat$Industry)){
     
     xs = subset(mat, mat$Industry == i)
-    xs$Count[xs$Count==0] <- NA
-      lm = lm(log(xs$Count)~log(xs$pop))
-      summary(lm)$coefficients[2, 1]
-      
+    
+    if (nrow(xs[xs$Count!=0,])<5) {
+      beta <- NA
+      r.sq <- NA
+      std.err <- NA
+    } else {
+      xs$Count[xs$Count==0] <- NA
+
+      lm = lm(log(xs$Count)~log(xs$pop))    
       beta = round (summary(lm)$coefficients[2, 1], digits = 3)
       r.sq = summary(lm)$adj.r.squared
       std.err = summary(lm)$coefficients[2, 2]
-      
-      econ = unique (xs$Industry)
-      
-      d = rbind(d, data.frame(econ, beta, r.sq, std.err))
+    }
+
+    econ = unique (xs$Industry)
+    
+    d = rbind(d, data.frame(econ, beta, r.sq, std.err))
     
   }
   colnames (d) = c("Industry", "Beta", "r.sq", "std.err")

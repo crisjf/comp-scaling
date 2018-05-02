@@ -31,7 +31,7 @@ options(stringsAsFactors = FALSE)
     assign("year"    , 2000     , envir=US.env)
     assign("useDec"  , TRUE     , envir=US.env)
     assign("Afname"  , 'US_Tech.csv'     , envir=US.env)
-    assign("AYfname" , 'US_TechYr.csv'   , envir=US.env)
+    assign("AYfname" , 'US_TechDec.csv'   , envir=US.env)
     assign("RAYfname", 'US_RegTechYr.csv', envir=US.env)
     if (aggregate) {
       assign("aggregate", TRUE               , envir=US.env)
@@ -55,7 +55,7 @@ options(stringsAsFactors = FALSE)
       assign("aColLow"  , 'null'             , envir=US.env)
       assign("acol"     , 'NAICS.2D'         , envir=US.env)
       assign("aNameCol" , 'NAICS.2D.Name'    , envir=US.env)
-      assign("AYfname"  , 'US_Ind2DYr.csv'   , envir=US.env)
+      assign("AYfname"  , 'US_IndYr.csv'   , envir=US.env)
       assign("RAYfname" , 'US_RegInd2DYr.csv', envir=US.env)
     } else {
       assign("aggregate", FALSE            , envir=US.env)
@@ -76,13 +76,13 @@ options(stringsAsFactors = FALSE)
       assign("aColLow"  , 'null'             , envir=US.env)
       assign("acol"     , 'Occ.2D'           , envir=US.env)
       assign("aNameCol" , 'Occ.2D.Name'      , envir=US.env)
-      assign("AYfname"  , 'US_Occ2DYr.csv'   , envir=US.env)
+      assign("AYfname"  , 'US_OccYr.csv'   , envir=US.env)
       assign("RAYfname" , 'US_RegOcc2DYr.csv', envir=US.env)
     } else {
       assign("aggregate", FALSE            , envir=US.env)
       assign("aColLow"  , 'null'           , envir=US.env)
-      assign("acol"     , 'Occ.4D'         , envir=US.env)
-      assign("aNameCol" , 'Occ.4D.Name'    , envir=US.env)
+      assign("acol"     , 'Occ.3D'         , envir=US.env)
+      assign("aNameCol" , 'Occ.3D.Name'    , envir=US.env)
       assign("AYfname"  , 'US_OccYr.csv'   , envir=US.env)
       assign("RAYfname" , 'US_RegOccYr.csv', envir=US.env)
     }
@@ -107,7 +107,9 @@ loadUSParams <- function(actType,aggregate=TRUE) {
   if (aColLow != 'null') {
     economicActivity    <- merge(economicActivity,read.csv(paste0("../1.Data/",Afname))[,c(aColLow,acol,aNameCol)],by=aColLow)
   } else {
-    economicActivity    <- merge(economicActivity,unique(read.csv(paste0("../1.Data/",Afname))[,c(acol,aNameCol)]),by=acol)
+    df <- unique(read.csv(paste0("../1.Data/",Afname))[,c(acol,aNameCol)])
+    df <- df[!is.na(df[,acol]),]
+    economicActivity    <- merge(economicActivity,df,by=acol)
   }
 
   economicActivity$ID <- paste(economicActivity[,rcol],economicActivity[,acol])
@@ -176,35 +178,72 @@ loadUSRegs <- function(useDec,year) {
 }
 
 
-loadUSComplexity <- function(actType,aggregate=TRUE) {
+loadUSComplexity <- function(actType,aggregate=TRUE,sizeCol=NA,compCol=NA) {
   myenv <- .USEnv(actType,aggregate)
   for (n in ls(myenv, all.names=TRUE)){assign(n, get(n, myenv), environment())}
 
   if (actType=='field') {
-    sizeCol <- 'Nb.Papers.96.08'
-    compCol <- 'Mean.Nb.Aut.96.08'
+    if (is.na(sizeCol)) {sizeCol <- 'Nb.Papers.96.08'}
+    if (is.na(compCol)) {compCol <- 'Mean.Nb.Aut.96.08'}
     ycol    <- 'Year'
+    if (aggregate) {
+      exclude <- c("Agricultural and Biological Sciences","Environmental Science",
+             "Earth and Planetary Sciences","Veterinary") 
+    } else {
+      exclude <- c()
+    }
   } else if (actType=='techs') {
-    sizeCol <- 'nb.pat.class'
-    compCol <- 'age.class'
+    if (is.na(sizeCol)) {sizeCol <- 'nb.pat.class.dec'}
+    if (is.na(compCol)) {compCol <- 'age.class.dec'}
     ycol    <- 'dec'
+    if (aggregate) {
+      exclude <- c("Resins","Organic Compounds") 
+    } else {
+      exclude <- c()
+    }
+  } else if (actType=='ind') {
+    if (is.na(sizeCol)) {sizeCol <- 'Employment'}
+    if (is.na(compCol)) {compCol <- 'Share.STEM.occ'}
+    ycol    <- 'Year'
+    if (aggregate) {
+      aColLow <- 'NAICS.4D'
+      exclude <- c() 
+    } else {
+      exclude <- c()
+    }
+  } else if (actType=='occ') {
+    if (is.na(sizeCol)) {sizeCol <- 'Nb.Emp'}
+    if (is.na(compCol)) {compCol <- 'Mean.Y.Educ'}
+    ycol <- 'Year'
+    year <- 2016 #This overrides the default year
+    if (aggregate) {
+      aColLow <- 'Occ.3D'
+      exclude <- c() 
+    } else {
+      exclude <- c()
+    }
+  } else {
+    stop(paste('Unrecognized Activity Type:',actType,'\nChoose between: field, techs, ind, or occ.'))
   }
-  
   comp <- read.csv(paste0('../1.Data/',AYfname))
   comp <- comp[comp[,ycol]==year,]
 
   if (aColLow != 'null') {
     comp <- unique(comp[,c(aColLow,sizeCol,compCol)])
-    comp           <- merge(comp,read.csv(paste0("../1.Data/",Afname))[,c(aColLow,acol,aNameCol)],by=aColLow)
+    comp <- merge(comp,read.csv(paste0("../1.Data/",Afname))[,c(aColLow,acol,aNameCol)],by=aColLow)
+    
     comp$totalSize <- ave(comp[,sizeCol], comp[,acol], FUN = sum)
     comp$comp      <- comp[,compCol]*comp[,sizeCol]/comp$totalSize
-    comp$comp <- ave(comp$comp, comp[,acol], FUN = sum)
+    comp$comp      <- ave(comp$comp, comp[,acol], FUN = sum)
   } else {
     comp <- unique(comp[,c(acol,sizeCol,compCol)])
-    comp    <- merge(comp,unique(read.csv(paste0("../1.Data/",Afname))[,c(acol,aNameCol)]),by=acol)
+    comp <- merge(comp,unique(read.csv(paste0("../1.Data/",Afname))[,c(acol,aNameCol)]),by=acol)
     comp$comp <- comp[,compCol]
   }
   comp <- unique(comp[,c(acol,aNameCol,'comp')])
+  for (n in exclude) {
+    comp <- comp[comp[,aNameCol]!=n,]
+  }
   return(comp)   
 }
 
