@@ -1,6 +1,6 @@
 library(plotrix)
 options(stringsAsFactors = FALSE)
-source("../2.Functions/fig1Scatter.R")
+source("../2.Functions/figScatter.R")
 source("../2.Functions/loadData.R")
 
 #US  choose from: field, techs, ind, occ
