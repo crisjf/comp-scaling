@@ -100,7 +100,6 @@ loadUSParams <- function(actType,aggregate=TRUE) {
 
 
 .loadAct <- function(delta,year,rcol,acol,xcol,ycol,aNameCol,RAYfname,Afname,aColLow) {
-  #If no aggregation is needed, then pass aColLow='null' (never tested)
   #If delta=0 it will drop all zeros
   economicActivity    <- read.csv(paste0("../1.Data/",RAYfname))
   economicActivity    <- economicActivity[economicActivity[ycol]==year,]

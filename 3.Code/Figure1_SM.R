@@ -2,12 +2,20 @@ library(plotrix)
 options(stringsAsFactors = FALSE)
 source("../2.Functions/figScatter.R")
 source("../2.Functions/loadData.R")
-figure1Wrapper <- function(actType,aggregate,delta) {
-  loadUSParams(actType,aggregate)
-  economicActivity <- loadUSActivity(delta,actType,aggregate)
-  region <- loadUSRegs(useDec,year)
+figure1Wrapper <- function(actType,aggregate,delta,useBra) {
+  if (useBra) {
+    loadBRAParams(actType)
+    economicActivity <- loadBRActivity(delta,actType)
+    region <- loadBRARegs()
+  } else {
+    loadUSParams(actType,aggregate)
+    economicActivity <- loadUSActivity(delta,actType,aggregate)
+    region <- loadUSRegs(useDec,year)
+  }
   
-  if ((actType!='ind')&(actType!='occ')) {
+  dirName <- paste0(dirName,'/SM')
+  
+  if (((actType!='ind')&(actType!='occ'))|useBra) {
     figB <- merge(region,economicActivity,by=rcol)
     figB$Agg.Ec.Output = ave(figB$Ec.Output, figB[,rcol], FUN = sum)
     figB <- unique(figB[,c(rcol,'pop',rNameCol,'Agg.Ec.Output')])
@@ -26,18 +34,22 @@ figure1Wrapper <- function(actType,aggregate,delta) {
     fig1Scatter(figC_activity,'pop','Ec.Output',actName,acol,dirName)
   }
 }
-aggregate <- TRUE
+
+aggregate <- FALSE
 delta <- 0.
 
+useBra <- FALSE
 actType <- 'ind'
-figure1Wrapper(actType,aggregate,delta)
-# 
+figure1Wrapper(actType,aggregate,delta,useBra)
 actType <- 'occ'
-figure1Wrapper(actType,aggregate,delta)
-
+figure1Wrapper(actType,aggregate,delta,useBra)
 actType <- 'techs'
-figure1Wrapper(actType,aggregate,delta)
-
+figure1Wrapper(actType,aggregate,delta,useBra)
 actType <- 'field'
-figure1Wrapper(actType,aggregate,delta)
+figure1Wrapper(actType,aggregate,delta,useBra)
 
+useBra <- TRUE
+actType <- 'ind'
+figure1Wrapper(actType,aggregate,delta,useBra)
+actType <- 'occ'
+figure1Wrapper(actType,aggregate,delta,useBra)
