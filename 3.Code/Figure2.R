@@ -9,8 +9,8 @@ if (!('EconGeo' %in% installed.packages()[,"Package"])) {
 }
 library(EconGeo)
 
-actType <- 'ind'
-aggregate <- FALSE
+actType <- 'techs'
+aggregate <- TRUE
 delta <- 0.1
 loadUSParams(actType,aggregate)
 
@@ -20,12 +20,9 @@ comp <- comp[!is.na(comp$comp),]
 data   <- loadUSActivity(delta,actType,aggregate)
 region <- loadUSRegs(useDec,year)
 
-
 beta <- scaling(get.matrix(data[,c(rcol,acol,'Ec.Output')]), region[,c(rcol,'pop')])
 colnames(beta) <- c(acol,'Beta','r.sq','std.err')
 beta <- beta[!is.na(beta$Beta),]
-
-
 
 #==============#
 # 3 - FIGURE 1 #

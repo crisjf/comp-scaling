@@ -20,11 +20,13 @@ figure1Wrapper <- function(actType,aggregate,delta) {
   beta <- scaling(get.matrix(data[,c(rcol,acol,'Ec.Output')]), region[,c(rcol,'pop')])
   colnames(beta) <- c(acol,'Beta','r.sq','std.err')
   beta <- beta[!is.na(beta$Beta),]
+  
+  dirName <- paste0(dirName,'/SM')
   pub <- merge(beta, comp, by = acol) 
   fig2Scatter(pub,'comp','Beta',acol,paste0('Complexity measure for ',acol),dirName=dirName)
 }
 
-aggregate <- TRUE
+aggregate <- FALSE
 delta <- 0.
 
 actType <- 'ind'
@@ -38,9 +40,4 @@ figure1Wrapper(actType,aggregate,delta)
 
 actType <- 'field'
 figure1Wrapper(actType,aggregate,delta)
-
-
-
-
-
 
