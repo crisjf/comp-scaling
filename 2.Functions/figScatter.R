@@ -41,22 +41,32 @@ fig1Scatter <- function(df,xcol,ycol,plotName,ylabel,dirName) {
   }
 }
 
-fig2Scatter <- function(pub,xcol,ycol,plotName,xlabel,dirName='') {
+fig2Scatter <- function(pub,xcol,ycol,plotName,xlabel,dirName='',reverseX=FALSE) {
   setEPS()
+  print(dirName)
   if (dirName=='') {
     postscript(paste0('../4.Results/Figure2/',plotName, ".eps"))
   } else {
     postscript(paste0('../4.Results/Figure2/',dirName,'/',plotName, ".eps"))
   }
 
-  x = pub[,xcol]
-  y = pub[,ycol]
-  z = pub[,aNameCol]
+  if (reverseX){
+    df <- pub[rev(order(pub[,xcol])),] 
+    xrange <- rev(range(df[,xcol]))
+  } else {
+    df <- pub[order(pub[,xcol]),] 
+    xrange <- range(df[,xcol])
+  }
+  x = df[,xcol]
+  y = df[,ycol]
+  z = df[,aNameCol]
 
   plot(x, y, 
-       xlim = c(min(x), max(x)), ylim = c(min(y),max(y)),
+       xlim = xrange, ylim = c(min(y)-0.05,max(y)),
        col = "black", pch = 21, bg = "blue", 
        ylab = "", xlab = "", axes = FALSE)
+
+  text(x,y-0.025,z, cex = 0.75)
   axis(1)
   axis(2)
 
@@ -66,12 +76,10 @@ fig2Scatter <- function(pub,xcol,ycol,plotName,xlabel,dirName='') {
   mtext(xlabel, side = 1, line = 3.7, cex = 2)
   mtext("Scaling exponent", side = 2, line = 3.7, cex = 2)
    
-  text(x,y-0.025,z, cex = 0.75)
+  
    
-  text(min(x)+0.15,max(y)-0.1,
-  paste("r =", round(cor(x, y), digits = 2)),
-  cex = 2, col = "black")
-   
+  text(min(x)+0.1*(max(x)-min(x)),max(y)-0.1,paste("r =", round(cor(x, y), digits = 2)),cex = 2, col = "black")
+  
   reg1 <- lm(y ~ x)
   ablineclip(reg1, lwd = 5, x1 = min(x), x2 = max(x), col = "blue")
 

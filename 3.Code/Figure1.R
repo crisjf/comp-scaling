@@ -1,11 +1,12 @@
+remove(list = ls())
 library(plotrix)
 options(stringsAsFactors = FALSE)
 source("../2.Functions/figScatter.R")
 source("../2.Functions/loadData.R")
 
-actType <- 'techs'
-aggregate <- FALSE
-delta <- 0 
+actType <- 'ind'
+aggregate <- TRUE
+delta <- 0.1
 
 #==========================#
 # 0 - SELECT COLUMN NAMES  #
@@ -13,7 +14,7 @@ delta <- 0
 
 loadUSParams(actType,aggregate)
 
-loadBRAParams(actType)
+#loadBRAParams(actType)
 
 #=======================================#
 # 1 - LOAD DATA ON ECONOMIC ACTIVITIES  #
@@ -21,7 +22,7 @@ loadBRAParams(actType)
 
 economicActivity <- loadUSActivity(delta,actType,aggregate)
 
-economicActivity <- loadBRActivity(delta,actType)
+#economicActivity <- loadBRActivity(delta,actType)
 
 #==========================#
 # 2 - LOAD DATA ON CITIES  #
@@ -29,7 +30,7 @@ economicActivity <- loadBRActivity(delta,actType)
 
 region <- loadUSRegs(useDec,year)
 
-region <- loadBRARegs()
+#region <- loadBRARegs()
 
 #=======================#
 # 3 - FIGURE 1 - PART B #
@@ -53,9 +54,10 @@ for (i in unique(figC[,acol])){
   figC_activity <- figC[figC[,acol]==i,]
   actName <- unique(figC_activity[,aNameCol])
   actName <- gsub("/", "-", actName)
-  
+  print(c(i,actName))
   fig1Scatter(figC_activity,'pop','Ec.Output',actName,acol,dirName)
 }
+
 
 
 

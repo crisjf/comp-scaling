@@ -1,3 +1,4 @@
+remove(list = ls())
 library(plotrix)
 options(stringsAsFactors = FALSE)
 source("../2.Functions/figScatter.R")
@@ -53,3 +54,5 @@ actType <- 'ind'
 figure1Wrapper(actType,aggregate,delta,useBra)
 actType <- 'occ'
 figure1Wrapper(actType,aggregate,delta,useBra)
+
+print('END')

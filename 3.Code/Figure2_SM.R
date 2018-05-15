@@ -8,36 +8,41 @@ if (!('EconGeo' %in% installed.packages()[,"Package"])) {
   install_github("PABalland/EconGeo")
 }
 library(EconGeo)
-figure1Wrapper <- function(actType,aggregate,delta) {
+figure1Wrapper <- function(actType,aggregate,delta,reverseX) {
   loadUSParams(actType,aggregate)
   
   comp   <- loadUSComplexity(actType,aggregate)
   comp <- comp[!is.na(comp$comp),]
   
   data   <- loadUSActivity(delta,actType,aggregate)
+  data <- data[complete.cases(data),]
   region <- loadUSRegs(useDec,year)
   
   beta <- scaling(get.matrix(data[,c(rcol,acol,'Ec.Output')]), region[,c(rcol,'pop')])
   colnames(beta) <- c(acol,'Beta','r.sq','std.err')
   beta <- beta[!is.na(beta$Beta),]
   
-  dirName <- paste0(dirName,'/SM')
+  dirName <- 'SM'
   pub <- merge(beta, comp, by = acol) 
-  fig2Scatter(pub,'comp','Beta',acol,paste0('Complexity measure for ',acol),dirName=dirName)
+  fig2Scatter(pub,'comp','Beta',acol,paste0('Complexity measure for ',acol),dirName=dirName,reverseX=reverseX)
 }
 
 aggregate <- FALSE
-delta <- 0.
+delta <- 0.1
 
 actType <- 'ind'
-figure1Wrapper(actType,aggregate,delta)
+reverseX <- FALSE
+figure1Wrapper(actType,aggregate,delta,reverseX)
 
 actType <- 'occ'
-figure1Wrapper(actType,aggregate,delta)
+reverseX <- FALSE
+figure1Wrapper(actType,aggregate,delta,reverseX)
 
 actType <- 'techs'
-figure1Wrapper(actType,aggregate,delta)
+reverseX <- TRUE
+figure1Wrapper(actType,aggregate,delta,reverseX)
 
 actType <- 'field'
-figure1Wrapper(actType,aggregate,delta)
+reverseX <- FALSE
+figure1Wrapper(actType,aggregate,delta,reverseX)
 

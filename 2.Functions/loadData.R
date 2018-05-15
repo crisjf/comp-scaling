@@ -58,12 +58,12 @@ options(stringsAsFactors = FALSE)
       assign("AYfname"  , 'US_IndYr.csv'   , envir=US.env)
       assign("RAYfname" , 'US_RegInd2DYr.csv', envir=US.env)
     } else {
-      assign("aggregate", FALSE            , envir=US.env)
-      assign("aColLow"  , 'null'           , envir=US.env)
-      assign("acol"     , 'NAICS.4D'       , envir=US.env)
-      assign("aNameCol" , 'NAICS.4D.Name'  , envir=US.env)
-      assign("AYfname"  , 'US_IndYr.csv'   , envir=US.env)
-      assign("RAYfname" , 'US_RegIndYr.csv', envir=US.env)
+      assign("aggregate", FALSE              , envir=US.env)
+      assign("aColLow"  , 'null'             , envir=US.env)
+      assign("acol"     , 'NAICS.3D'         , envir=US.env)
+      assign("aNameCol" , 'NAICS.3D.Name'    , envir=US.env)
+      assign("AYfname"  , 'US_IndYr.csv'     , envir=US.env)
+      assign("RAYfname" , 'US_RegInd3DYr.csv', envir=US.env)
     }
   } else if (actType=='occ') {
     
@@ -104,13 +104,13 @@ loadUSParams <- function(actType,aggregate=TRUE) {
   economicActivity    <- read.csv(paste0("../1.Data/",RAYfname))
   economicActivity    <- economicActivity[economicActivity[ycol]==year,]
   if (aColLow != 'null') {
+
     economicActivity    <- merge(economicActivity,read.csv(paste0("../1.Data/",Afname))[,c(aColLow,acol,aNameCol)],by=aColLow)
   } else {
     df <- unique(read.csv(paste0("../1.Data/",Afname))[,c(acol,aNameCol)])
     df <- df[!is.na(df[,acol]),]
     economicActivity    <- merge(economicActivity,df,by=acol)
   }
-
   economicActivity$ID <- paste(economicActivity[,rcol],economicActivity[,acol])
   economicActivity$Ec.Output = ave(economicActivity[,xcol], economicActivity$ID, FUN = sum)
   economicActivity <- unique(economicActivity[,c(acol,rcol,aNameCol,'Ec.Output')])
@@ -127,7 +127,7 @@ loadUSActivity <- function(delta,actType,aggregate=TRUE) {
     xcol     <- 'Nb.Papers.96.08'
     ycol     <- 'Year'
   } else if (actType=='techs') {
-    xcol     <- 'pat.count'
+    xcol     <- 'pat.count' #claim.count
     ycol     <- 'dec' 
   } else if (actType=='ind') {
     xcol     <- 'GDP'
@@ -139,6 +139,7 @@ loadUSActivity <- function(delta,actType,aggregate=TRUE) {
     stop(paste('Unrecognized Activity Type:',actType))
   }
   economicActivity <- .loadAct(delta,year,rcol,acol,xcol,ycol,aNameCol,RAYfname,Afname,aColLow)
+  economicActivity <- economicActivity[complete.cases(economicActivity),]
   return(economicActivity)
 }
 
@@ -208,6 +209,9 @@ loadUSComplexity <- function(actType,aggregate=TRUE,sizeCol=NA,compCol=NA) {
       aColLow <- 'NAICS.4D'
       exclude <- c() 
     } else {
+      aColLow <- 'NAICS.4D'
+      acol <- 'NAICS.3D'
+      aNameCol <- 'NAICS.3D.Name'
       exclude <- c()
     }
   } else if (actType=='occ') {
@@ -224,11 +228,13 @@ loadUSComplexity <- function(actType,aggregate=TRUE,sizeCol=NA,compCol=NA) {
   } else {
     stop(paste('Unrecognized Activity Type:',actType,'\nChoose between: field, techs, ind, or occ.'))
   }
+
   comp <- read.csv(paste0('../1.Data/',AYfname))
   comp <- comp[comp[,ycol]==year,]
 
   if (aColLow != 'null') {
     comp <- unique(comp[,c(aColLow,sizeCol,compCol)])
+    comp <- comp[complete.cases(comp),]
     comp <- merge(comp,read.csv(paste0("../1.Data/",Afname))[,c(aColLow,acol,aNameCol)],by=aColLow)
     
     comp$totalSize <- ave(comp[,sizeCol], comp[,acol], FUN = sum)
@@ -236,6 +242,7 @@ loadUSComplexity <- function(actType,aggregate=TRUE,sizeCol=NA,compCol=NA) {
     comp$comp      <- ave(comp$comp, comp[,acol], FUN = sum)
   } else {
     comp <- unique(comp[,c(acol,sizeCol,compCol)])
+    comp <- comp[complete.cases(comp),]
     comp <- merge(comp,unique(read.csv(paste0("../1.Data/",Afname))[,c(acol,aNameCol)]),by=acol)
     comp$comp <- comp[,compCol]
   }
@@ -246,6 +253,30 @@ loadUSComplexity <- function(actType,aggregate=TRUE,sizeCol=NA,compCol=NA) {
   return(comp)   
 }
 
+
+loadUSTechsDec <- function(delta,use,level) {
+  myenv <- .USEnv('techs',FALSE)
+  for (n in ls(myenv, all.names=TRUE)){assign(n, get(n, myenv), environment())}
+  catCol <- paste0('NBER.',level)
+  catNameCol <- paste0(catCol,'.Name')
+  RYfname <- "US_RegDec.csv"
+  df = read.csv(paste0("../1.Data/",RAYfname))
+  df = merge (df, read.csv(paste0("../1.Data/",Afname))[, c("Class", catCol, catNameCol)], by = "Class")
+  df$ID = paste(df[,catCol], df$CBSA, df$dec, sep = "-")
+  df[,paste0(use,'.s')] = ave(df[,paste0(use,'.count')], df$ID, FUN = sum)
+  df = unique (df[, c("CBSA", catCol, catNameCol, "dec", paste0(use,".s"))])
+  df = merge (df, read.csv(paste0("../1.Data/",RYfname))[, c("CBSA", "dec","newpop")], by = c("CBSA", "dec"))
+  
+  df$ID = paste(df$dec, df[,catNameCol], sep = "-")
+  df = df[complete.cases(df),]
+  df[,paste0(use,'.count')] = df[,paste0(use,'.s')] + delta
+  cities <- read.csv(paste0('../1.Data/',Rfname))[,c("CBSA","Flag.CBSA.availability")]
+  df <-merge(df,cities[cities$Flag.CBSA.availability==1,],by='CBSA')
+
+  df <- df[,c('CBSA','ID','dec',catCol,catNameCol,paste0(use,'.count'),'newpop')]
+
+  return(df)
+}
 
 
 ##########################################################################################

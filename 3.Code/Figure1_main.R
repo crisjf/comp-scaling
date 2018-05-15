@@ -1,3 +1,4 @@
+remove(list = ls())
 library(plotrix)
 options(stringsAsFactors = FALSE)
 source("../2.Functions/figScatter.R")
@@ -27,11 +28,11 @@ figure1Wrapper <- function(actType,aggregate,delta) {
   }
 }
 aggregate <- TRUE
-delta <- 0.
+delta <- 1
 
 actType <- 'ind'
 figure1Wrapper(actType,aggregate,delta)
-# 
+
 actType <- 'occ'
 figure1Wrapper(actType,aggregate,delta)
 
@@ -41,3 +42,4 @@ figure1Wrapper(actType,aggregate,delta)
 actType <- 'field'
 figure1Wrapper(actType,aggregate,delta)
 
+print('END')

@@ -1,0 +1,1 @@
+- appendix fig. 1 & 2: 3-digit industries (now 2-digit only, mapping issue between 4 and 3-digit)

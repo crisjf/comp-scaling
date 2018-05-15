@@ -1,3 +1,4 @@
+remove(list = ls())
 library(plotrix)
 options(stringsAsFactors = FALSE)
 source("../2.Functions/loadData.R")
@@ -9,9 +10,11 @@ if (!('EconGeo' %in% installed.packages()[,"Package"])) {
 }
 library(EconGeo)
 
-actType <- 'techs'
+actType <- 'ind'
 aggregate <- TRUE
 delta <- 0.1
+reverseX<- FALSE
+
 loadUSParams(actType,aggregate)
 
 comp   <- loadUSComplexity(actType,aggregate)
@@ -20,14 +23,17 @@ comp <- comp[!is.na(comp$comp),]
 data   <- loadUSActivity(delta,actType,aggregate)
 region <- loadUSRegs(useDec,year)
 
-beta <- scaling(get.matrix(data[,c(rcol,acol,'Ec.Output')]), region[,c(rcol,'pop')])
+data <- data[complete.cases(data),]
+beta <- scaling(get.matrix(data[,c(rcol,acol,'Ec.Output')]), region[,c(rcol,'pop')],th=150,delta=delta)
 colnames(beta) <- c(acol,'Beta','r.sq','std.err')
 beta <- beta[!is.na(beta$Beta),]
 
+
 #==============#
-# 3 - FIGURE 1 #
+# 3 - FIGURE 2 #
 #==============#
 
-pub <- merge(beta, comp, by = acol) 
-fig2Scatter(pub,'comp','Beta',acol,paste0('Complexity measure for ',acol),dirName=dirName)
+pub <- merge(beta, comp, by = acol)
+dirName <- ''
+fig2Scatter(pub,'comp','Beta',acol,paste0('Complexity measure for ',acol),dirName='',reverseX=reverseX)
 

@@ -1,4 +1,4 @@
-scaling = function (mat, pop) 
+scaling = function (mat, pop,th=30,delta=0) 
   
 {
   d = NULL
@@ -11,8 +11,7 @@ scaling = function (mat, pop)
   for(i in unique (mat$Industry)){
     
     xs = subset(mat, mat$Industry == i)
-    
-    if (nrow(xs[xs$Count!=0,])<5) {
+    if (nrow(xs[xs$Count!=delta,])<th) {
       beta <- NA
       r.sq <- NA
       std.err <- NA
