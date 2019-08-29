@@ -37,7 +37,7 @@ figure1Wrapper <- function(actType,aggregate,delta,useBra) {
 }
 
 aggregate <- FALSE
-delta <- 0.
+delta <- 1
 
 useBra <- FALSE
 actType <- 'ind'

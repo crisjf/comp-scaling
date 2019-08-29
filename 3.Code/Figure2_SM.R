@@ -13,36 +13,53 @@ figure1Wrapper <- function(actType,aggregate,delta,reverseX) {
   
   comp   <- loadUSComplexity(actType,aggregate)
   comp <- comp[!is.na(comp$comp),]
+  for (i in unique(comp[duplicated((comp[,acol])),acol])) {
+    nnn <- comp[comp[,acol]==i,aNameCol][1]
+    ccc <- comp[comp[,acol]==i,'comp'][1]
+    comp <- comp[comp[,acol]!=i,]
+    row <- c(i,nnn,ccc)
+    comp <- rbind(comp, row)
+  }
+  comp$comp <- as.numeric(comp$comp)
   
   data   <- loadUSActivity(delta,actType,aggregate)
   data <- data[complete.cases(data),]
+  data <- unique(data[,c(acol,'CBSA','Ec.Output')])
+  
   region <- loadUSRegs(useDec,year)
   
   beta <- scaling(get.matrix(data[,c(rcol,acol,'Ec.Output')]), region[,c(rcol,'pop')])
   colnames(beta) <- c(acol,'Beta','r.sq','std.err')
   beta <- beta[!is.na(beta$Beta),]
   
-  dirName <- 'SM'
   pub <- merge(beta, comp, by = acol) 
-  fig2Scatter(pub,'comp','Beta',acol,paste0('Complexity measure for ',acol),dirName=dirName,reverseX=reverseX)
+  df <- merge(region,data,by='CBSA')
+  df <- df[df$Ec.Output>delta,]
+  df$total.Out <- ave(df[,'Ec.Output'], df[,acol], FUN = sum)
+  df$city.count <- ave(df[,'CBSA'], df[,acol], FUN = length)
+  df <- unique(df[,c(acol,'total.Out','city.count')])
+  df <- df[df$city.count>=200,]
+  pub <- merge(pub,df,by=acol)
+  
+  dirName <- 'SM'
+  # fig2Scatter(pub,'comp','Beta',acol,paste0('Complexity measure for ',acol),dirName=dirName,reverseX=reverseX)
+  acolHigh <- 'Occ.2D.Name'
+  fig2ScatterByCat(pub,'comp','Beta',acolHigh,acol,paste0('Complexity measure for ',acol),dirName=dirName,reverseX=reverseX)
 }
 
 aggregate <- FALSE
-delta <- 0.1
-
-actType <- 'ind'
-reverseX <- FALSE
-figure1Wrapper(actType,aggregate,delta,reverseX)
+delta <- 1
 
 actType <- 'occ'
 reverseX <- FALSE
-figure1Wrapper(actType,aggregate,delta,reverseX)
+# figure1Wrapper(actType,aggregate,delta,reverseX)
+# 
+# actType <- 'techs'
+# reverseX <- FALSE
+# figure1Wrapper(actType,aggregate,delta,reverseX)
+# 
+# actType <- 'field'
+# reverseX <- FALSE
+# figure1Wrapper(actType,aggregate,delta,reverseX)
 
-actType <- 'techs'
-reverseX <- TRUE
-figure1Wrapper(actType,aggregate,delta,reverseX)
-
-actType <- 'field'
-reverseX <- FALSE
-figure1Wrapper(actType,aggregate,delta,reverseX)
 

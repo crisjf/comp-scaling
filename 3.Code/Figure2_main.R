@@ -12,7 +12,7 @@ library(EconGeo)
 figure1Wrapper <- function(actType,aggregate,delta,reverseX) {
   loadUSParams(actType,aggregate)
   
-  comp   <- loadUSComplexity(actType,aggregate)
+  comp   <- loadUSComplexity(actType,aggregate,exclude=TRUE)
   comp <- comp[!is.na(comp$comp),]
   
   data   <- loadUSActivity(delta,actType,aggregate)
@@ -23,6 +23,13 @@ figure1Wrapper <- function(actType,aggregate,delta,reverseX) {
   colnames(beta) <- c(acol,'Beta','r.sq','std.err')
   beta <- beta[!is.na(beta$Beta),]
   pub <- merge(beta, comp, by = acol) 
+  df <- merge(region,data,by='CBSA')
+  df <- df[df$Ec.Output>delta,]
+  df$total.Out <- ave(df[,'Ec.Output'], df[,acol], FUN = sum)
+  df$city.count <- ave(df[,'CBSA'], df[,acol], FUN = length)
+  df <- unique(df[,c(acol,'total.Out','city.count')])
+  df <- df[df$city.count>=200,]
+  pub <- merge(pub,df,by=acol)
   dirName <- ''
   fig2Scatter(pub,'comp','Beta',acol,paste0('Complexity measure for ',acol),dirName=dirName,reverseX=reverseX)
 }
@@ -39,7 +46,7 @@ reverseX <- FALSE
 figure1Wrapper(actType,aggregate,delta,reverseX)
 
 actType <- 'techs'
-reverseX <- TRUE
+reverseX <- FALSE
 figure1Wrapper(actType,aggregate,delta,reverseX)
 
 actType <- 'field'

@@ -1,0 +1,141 @@
+96	Gas separation	13	Gas	1	Chemical
+96	Gas separation: apparatus	13	Gas	1	Chemical
+
+96	Gas separation	13	Gas	1	Chemical
+
+
+
+
+128	Surgery	32	Surgery & Medical Instruments	3	Drugs & Medical
+128	Surgery	32	Surgery & Medical Instruments	3	Drugs & Medical
+128	Surgery: kinesitherapy	32	Surgery & Medical Instruments	3	Drugs & Medical
+128	Surgery: splint, brace, or bandage	32	Surgery & Medical Instruments	3	Drugs & Medical
+128	Surgery	32	Surgery & Medical Instruments	3	Drugs & Medical
+128	Surgery	32	Surgery & Medical Instruments	3	Drugs & Medical
+128	Surgery: light, thermal, and electrical application	32	Surgery & Medical Instruments	3	Drugs & Medical
+
+128	Surgery	32	Surgery & Medical Instruments	3	Drugs & Medical
+
+
+
+
+156	Adhesive bonding and miscellaneous chemical manufacture	19	Miscellaneous-chemical	1	Chemical
+156	Etching a substrate: processes	19	Miscellaneous-chemical	1	Chemical
+
+156	Adhesive bonding and miscellaneous chemical manufacture	19	Miscellaneous-chemical	1	Chemical
+
+
+
+
+
+
+200	Electricity: circuit makers and breakers	41	Electrical Devices	4	Electrical & Electronic
+200	High-voltage switches with arc preventing or extinguishing devices	49	Miscellaneous-Elec.	4	Electrical & Electronic
+
+
+200	Electricity: circuit makers and breakers	41	Electrical Devices	4	Electrical & Electronic
+
+
+
+
+204	Chemistry: electrical and wave energy	19	Miscellaneous-chemical	1	Chemical
+204	Electrolysis: processes, compositions used therein, and methods of preparing the compositions	19	Miscellaneous-chemical	1	Chemical
+
+204	Chemistry: electrical and wave energy	19	Miscellaneous-chemical	1	Chemical
+
+
+
+
+219	Electric heating	49	Miscellaneous-Elec.	4	Electrical & Electronic
+219	Electric resistance heating devices	41	Electrical Devices	4	Electrical & Electronic
+
+
+219	Electric heating	41	Electrical Devices	4	Electrical & Electronic
+
+
+
+
+252	Compositions	19	Miscellaneous-chemical	1	Chemical
+252	Catalyst, solid sorbent, or support therefor: product or process of making	19	Miscellaneous-chemical	1	Chemical
+252	Earth boring, well treating, and oil field chemistry	64	Earth Working & Wells	6	Others
+252	Solid anti-friction devices, materials therefor, lubricant or separant compositions for moving solid surfaces, and miscellaneous mineral oil compositions	59	Miscellaneous-Mechanical	5	Mechanical
+252	Cleaning compositions for solid surfaces, auxiliary compositions therefor, or processes of preparing the compositions	19	Miscellaneous-chemical	1	Chemical
+252	Colloid systems and wetting agents; subcombinations thereof; processes of	19	Miscellaneous-chemical	1	Chemical
+
+252	Colloid systems and wetting agents	19	Miscellaneous-chemical	1	Chemical
+
+
+
+260	Chemistry of carbon compounds	19	Miscellaneous-chemical	1	Chemical
+260	Chemistry: fischer-tropsch processes; or purification or recovery of products thereof	19	Miscellaneous-chemical	1	Chemical
+260	Synthetic resins or natural rubbers -- part of the class 520 series	15	Resins	1	Chemical
+260	Synthetic resins or natural rubbers -- part of the class 520 series	15	Resins	1	Chemical
+260	Synthetic resins or natural rubbers -- part of the class 520 series	15	Resins	1	Chemical
+260	Synthetic resins or natural rubbers -- part of the class 520 series	15	Resins	1	Chemical
+260	Synthetic resins or natural rubbers -- part of the class 520 series	15	Resins	1	Chemical
+260	Synthetic resins or natural rubbers -- part of the class 520 series	15	Resins	1	Chemical
+260	Synthetic resins or natural rubbers -- part of the class 520 series	15	Resins	1	Chemical
+260	Synthetic resins or natural rubbers -- part of the class 520 series	15	Resins	1	Chemical
+260	Synthetic resins or natural rubbers -- part of the class 520 series	15	Resins	1	Chemical
+260	Chemistry: natural resins or derivatives; peptides or proteins; lignins or reaction products thereof	15	Resins	1	Chemical
+260	Organic compounds -- part of the class 532-570 series	14	Organic Compounds	1	Chemical
+260	Organic compounds -- part of the class 532-570 series	14	Organic Compounds	1	Chemical
+260	Organic compounds -- part of the class 532-570 series	14	Organic Compounds	1	Chemical
+260	Organic compounds -- part of the class 532-570 series	14	Organic Compounds	1	Chemical
+260	Organic compounds -- part of the class 532-570 series	14	Organic Compounds	1	Chemical
+260	Organic compounds -- part of the class 532-570 series	14	Organic Compounds	1	Chemical
+260	Organic compounds -- part of the class 532-570 series	14	Organic Compounds	1	Chemical
+260	Organic compounds -- part of the class 532-570 series	14	Organic Compounds	1	Chemical
+260	Organic compounds -- part of the class 532-570 series	14	Organic Compounds	1	Chemical
+260	Organic compounds -- part of the class 532-570 series	14	Organic Compounds	1	Chemical
+260	Organic compounds -- part of the class 532-570 series	14	Organic Compounds	1	Chemical
+260	Organic compounds -- part of the class 532-570 series	14	Organic Compounds	1	Chemical
+260	Organic compounds -- part of the class 532-570 series	14	Organic Compounds	1	Chemical
+260	Organic compounds -- part of the class 532-570 series	14	Organic Compounds	1	Chemical
+260	Organic compounds -- part of the class 532-570 series	14	Organic Compounds	1	Chemical
+260	Organic compounds -- part of the class 532-570 series	14	Organic Compounds	1	Chemical
+260	Organic compounds -- part of the class 532-570 series	14	Organic Compounds	1	Chemical
+260	Chemistry of hydrocarbon compounds	19	Miscellaneous-chemical	1	Chemical
+
+
+
+260	Organic compounds -- part of the class 532-570 series	14	Organic Compounds	1	Chemical
+
+
+
+
+318	Electricity: motive power systems	45	Power Systems	4	Electrical & Electronic
+318	Electricity: motor control systems	45	Power Systems	4	Electrical & Electronic
+
+
+318	Electricity: motive power systems	45	Power Systems	4	Electrical & Electronic
+
+
+
+
+369	Dynamic magnetic information storage or retrieval	24	Information Storage	2	Computers & Communications
+369	Dynamic information storage or retrieval	24	Information Storage	2	Computers & Communications
+369	Dynamic optical information storage or retrieval	24	Information Storage	2	Computers & Communications
+
+369	Dynamic information storage or retrieval	24	Information Storage	2	Computers & Communications
+
+
+
+428	Stock material or miscellaneous articles	69	Miscellaneous-Others	6	Others
+428	Fabric (woven, knitted, or nonwoven textile or cloth, etc.)	11	Agriculture, Food, Textiles	1	Chemical
+
+
+
+
+428	Fabric (woven, knitted, or nonwoven textile or cloth, etc.)	11	Agriculture, Food, Textiles	1	Chemical
+
+
+
+
+
+
+
+
+
+
+
