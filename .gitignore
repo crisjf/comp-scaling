@@ -7,6 +7,8 @@
 4.Results/Figure2/
 4.Results/Figure3/
 4.Results/*.ai
+4.Results/*
+revision-nhb/*
 .dropbox
 $'Icon\r'
 _Archives/*
