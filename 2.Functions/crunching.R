@@ -1,12 +1,23 @@
-scaling = function (mat, pop,th=30,delta=0) 
+library(ivpack)
+
+scaling = function (mat, pop,th=30,delta=0,useIv=FALSE,dropMissingIv=FALSE) 
   
 {
   d = NULL
-  
+
   mat = as.matrix(mat)
   mat = get.list(mat)
   mat = merge (mat, pop, by.x = 1, by.y = 1)
-  colnames (mat) = c("geo", "Industry", "Count", "pop")
+  if (useIv){
+    colnames (mat) = c("geo", "Industry", "Count", "pop",'pop.iv')
+    if (dropMissingIv){
+      mat <- mat[!is.na(mat$pop.iv),]
+    } else {
+      mat[is.na(mat$pop.iv),"pop.iv"] <- 1
+    }    
+  } else {
+    colnames (mat) = c("geo", "Industry", "Count", "pop")
+  }
   
   for(i in unique (mat$Industry)){
     
@@ -17,8 +28,12 @@ scaling = function (mat, pop,th=30,delta=0)
       std.err <- NA
     } else {
       xs$Count[xs$Count==0] <- NA
+      if (useIv) {
 
-      lm = lm(log(xs$Count)~log(xs$pop))    
+        lm <- ivreg(log(xs$Count)~log(xs$pop)|log(xs$pop.iv))
+      } else {
+        lm = lm(log(xs$Count)~log(xs$pop))    
+      }
       beta = round (summary(lm)$coefficients[2, 1], digits = 3)
       r.sq = summary(lm)$adj.r.squared
       std.err = summary(lm)$coefficients[2, 2]
@@ -45,21 +60,35 @@ plotsegraph <- function(loc, value, sterr, wiskwidth, color = "grey", linewidth 
 }
 
 bottomQ <- function(df,th,use,delta) {
-	bottom <- df[,paste0('top',100-th+5,'pc.',use)]
-	for (i in seq(100-th+10,100,5)){
-		col <- paste0('top',i,'pc.',use)
-		bottom = bottom+df[,col]
-	}
+  if (use=='claim'){
+    useLocal = 'cl'
+  } else {
+    useLocal = 'pat'
+  }
+	bottom <- df[,paste0('top',100-th+5,'pc.',useLocal)]
+  if (100-th+10<=100) {
+    for (i in seq(100-th+10,100,5)){
+      col <- paste0('top',i,'pc.',useLocal)
+      bottom = bottom+df[,col]
+    }
+  }
 	bottom <- bottom+delta
 	return(bottom)
 }
 
 topQ <- function(df,th,use,delta) {
-	top <- df[,paste0('top',5,'pc.',use)]
-	for (i in seq(10,th,5)){
-		col <- paste0('top',i,'pc.',use)
-		top = top+df[,col]
-	}
+  if (use=='claim'){
+    useLocal = 'cl'
+  } else {
+    useLocal = 'pat'
+  }
+	top <- df[,paste0('top',5,'pc.',useLocal)]
+  if (th>=10) {
+    for (i in seq(10,th,5)){
+      col <- paste0('top',i,'pc.',useLocal)
+      top = top+df[,col]
+    }
+  }
 	top <- top+delta
 	return(top)
 }
