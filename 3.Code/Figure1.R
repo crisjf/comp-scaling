@@ -4,8 +4,8 @@ options(stringsAsFactors = FALSE)
 source("../2.Functions/figScatter.R")
 source("../2.Functions/loadData.R")
 
-actType <- 'techs'
-aggregate <- FALSE
+actType <- 'occ'
+aggregate <- TRUE
 delta <- 1
 
 #==========================#
@@ -30,6 +30,7 @@ economicActivity <- loadUSActivity(delta,actType,aggregate)
 
 region <- loadUSRegs(useDec,year)
 
+#region <- region[region$pop>1e6,]
 #region <- loadBRARegs()
 
 #=========================#
@@ -48,7 +49,10 @@ df <- unique(df[,c(acol,aNameCol,'total.Out','city.count')])
 figB <- merge(region,economicActivity,by=rcol)
 figB$Agg.Ec.Output = ave(figB$Ec.Output, figB[,rcol], FUN = sum)
 figB <- unique(figB[,c(rcol,'pop',rNameCol,'Agg.Ec.Output')])
-fig1Scatter(figB,'pop','Agg.Ec.Output',acol,acol,dirName)
+
+
+fig1Scatter(figB,'pop','Agg.Ec.Output',acol,acol,dirName,th=1e6)
+
 
 fig1Scatter(region,'pop','gdp.2015',acol,acol,'US_Ind')
 fig1Scatter(region,'pop','emp.2015',acol,acol,'US_Occ')

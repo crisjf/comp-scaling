@@ -15,8 +15,8 @@ if (!('EconGeo' %in% installed.packages()[,"Package"])) {
 }
 library(EconGeo)
 
-actType <- 'techs'
-aggregate <- TRUE
+actType <- 'field'
+aggregate <- FALSE
 delta <- 1
 reverseX<- FALSE
 
@@ -25,7 +25,7 @@ loadUSParams(actType,aggregate)
 comp <- loadUSComplexity(actType,aggregate,exclude=TRUE)
 comp <- comp[!is.na(comp$comp),]
 
-write.csv(comp,file='~/Downloads/AgeOfRecombination2D.csv')
+#write.csv(comp,file='~/Downloads/AgeOfRecombination2D.csv')
 
 for (altComp in alternativeComp) {
   compAlt <- loadUSComplexity(actType,aggregate,exclude=TRUE,compCol = altComp)
@@ -51,9 +51,13 @@ length(unique(data$CBSA))
 
 data <- data[complete.cases(data),]
 #beta <- scaling(get.matrix(data[,c(rcol,acol,'Ec.Output')]), region[,c(rcol,'pop','pop.iv')],th=150,delta=delta,useIv=TRUE,dropMissingIv=FALSE)
-beta <- scaling(get.matrix(data[,c(rcol,acol,'Ec.Output')]), region[,c(rcol,'pop')],th=150,delta=delta,useIv=FALSE)
+
+region <- region[region$pop>1e6,]
+
+beta <- scaling(get.matrix(data[,c(rcol,acol,'Ec.Output')]), region[,c(rcol,'pop')],th=25,delta=delta,useIv=FALSE)
 colnames(beta) <- c(acol,'Beta','r.sq','std.err')
 beta <- beta[!is.na(beta$Beta),]
+
 
 
 # matched <- unique(merge(data[,c(rcol,acol,'Ec.Output')],region[,c(rcol,'pop')],by=rcol))
@@ -80,7 +84,7 @@ df <- df[df$Ec.Output>delta,]
 df$total.Out <- ave(df[,'Ec.Output'], df[,acol], FUN = sum)
 df$city.count <- ave(df[,'CBSA'], df[,acol], FUN = length)
 df <- unique(df[,c(acol,'total.Out','city.count')])
-df <- df[df$city.count>=200,]
+#df <- df[df$city.count>=200,]
 pub <- merge(pub,df,by=acol)
 
 
@@ -102,6 +106,9 @@ ptitle <- actName
 pxaxis <- compName
 pyaxis <- 'Scaling exponent (β)'
 fig2ScatterGG(pub,'comp','Beta',ptitle,pxaxis,pyaxis,actType)
+
+
+
 # 
 for (i in 1:length(alternativeComp)) {
   pxaxis <- compName

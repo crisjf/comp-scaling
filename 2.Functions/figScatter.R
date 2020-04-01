@@ -4,7 +4,7 @@ library(ggthemes)
 library(extrafont)
 # font_import("Avenir Next Condensed",prompt=FALSE)
 
-fig1Scatter <- function(df,xcol,ycol,plotName,ylabel,dirName) {
+fig1Scatter <- function(df,xcol,ycol,plotName,ylabel,dirName,th=0) {
   if (nrow(df)>=3) {
     minix = min(log10(df[,xcol]))
     maxix = round (max(log10(df[,xcol])), digits = 0)
@@ -26,21 +26,49 @@ fig1Scatter <- function(df,xcol,ycol,plotName,ylabel,dirName) {
     axis(1)
     axis(2) 
     
-    reg1 <- lm(log10(df[,ycol]) ~ log10(df[,xcol]))
-    ablineclip(reg1, lwd = 5, x1 = minix, x2 = maxix, col = "firebrick3") 
+    reg1 <- lm(log10(df[,ycol]) ~ log10(df[,xcol]))    
+    if (th!=0){
+      reg1 <- lm(log10(df[df[,xcol]>=th,ycol]) ~ log10(df[df[,xcol]>=th,xcol]))
+      reg2 <- lm(log10(df[df[,xcol]< th,ycol]) ~ log10(df[df[,xcol]< th,xcol]))
+    }
+
+    if (th==0) {
+      ablineclip(reg1, lwd = 5, x1 = minix, x2 = maxix, col = "firebrick3") 
+    } else {
+      ablineclip(reg1, lwd = 5, x1 = min(log10(df[df[,xcol]>=th,xcol])), x2 = maxix, col = "firebrick3") 
+      ablineclip(reg2, lwd = 5, x1 = minix, x2 = max(log10(df[df[,xcol]<th,xcol])), col = "firebrick3") 
+    }
     
-    df$predicted <- predict(reg1, newdata=df)
-    a <- df[df[,xcol]==min(df[,xcol]),'predicted']
+    df <- df[order(df[,xcol],decreasing=FALSE), ]
+    if (th==0) {
+      a <- predict(reg1, newdata=df)[1]
+      a <- as.double(a)
+    } else {
+      df_2 <- df[df[,xcol]<th,]
+      df_2 <- df_2[order(df_2[,xcol],decreasing=FALSE), ]
+      a <- predict(reg2, newdata=df_2)[1]
+      a <- as.double(a)
+    }
     
     par(las = 0)
     ablineclip(a = a - minix, b= 1, col = "black", lwd = 5, x1 = minix, x2 = maxix)
     
     mtext("Log Population", side = 1, line = 3.7, cex = 2)
     mtext(paste("Log ",ylabel), side = 2, line = 3.7, cex = 2)
-    text(minix+1, maxiy-1, 
+    if (th==0) {
+      text(minix+1, maxiy-1, 
          paste("Beta =", round(summary(reg1)$coefficients[2, 1], digits = 2),'\n R2 =',
                round(summary(reg1)$adj.r.squared,digits=2)), 
          cex = 2, col = "black")
+    } else {
+      text(minix+1, maxiy-1, 
+         paste("Beta =", round(summary(reg2)$coefficients[2, 1], digits = 2),'\n R2 =',
+               round(summary(reg2)$adj.r.squared,digits=2),'\n',
+               "Beta =", round(summary(reg1)$coefficients[2, 1], digits = 2),'\n R2 =',
+               round(summary(reg1)$adj.r.squared,digits=2)), 
+         cex = 2, col = "black")
+    }
+
     title(main=paste('Scaling for',plotName))
     
     dev.off()
