@@ -1,5 +1,7 @@
 # comp-scaling
 
+Replication code for [Complex economic activities concentrate in large cities](https://www.nature.com/articles/s41562-019-0803-3)
+
 ## Description of data-files:
 
 ### US data:
